@@ -7,5 +7,4 @@ def cart_processor(request):
         session_key = request.session.session_key
     )
 
-    return('cart_total_item': cart.total_items,'cart_sumtotal': cart.sumtotal,)
-   
+    return {'cart_total_item': cart.total_items, 'cart_sumtotal': cart.sumtotal}   

@@ -1,7 +1,7 @@
 from django import forms
 from .models import CartItem
 
-class AddToCartForm(forms.form):
+class AddToCartForm(forms.Form):
     size_id = forms.IntegerField(required=False)
     quantity = forms.IntegerField(min_value=1,initial=1)
 
