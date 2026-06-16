@@ -16,7 +16,8 @@ class IndexView(TemplateView):
     def get(self,request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         if request.headers.get('HX-Request'):
-            return TemplateResponse(request, 'main/home_context.html',context)
+            return TemplateResponse(request, 'main/home_content.html', context)
+        
         return TemplateResponse(request, self.template_name,context)
     
 
@@ -59,9 +60,9 @@ class CatalogView(TemplateView):
         context.update({
             'category': categories,
             'products': products,
-            'current_category': current_slug,
+            'current_category': current_category.slug if current_category else None,
             'filter_params': filter_params,
-            'sizes': Size.object.all(),
+            'sizes': Size.objects.all(),
             'search_query': query or ''
         })    
         if self.request.GET.get('show_search') == 'true':
@@ -79,7 +80,7 @@ class CatalogView(TemplateView):
                 return TemplateResponse(request,'main/search_button.html',{})
             template = 'main/filter_modal.html' if request.GET.get('show_filters') == 'true' else 'main/catalog.html'
             return TemplateResponse(request,template,context)
-        return TemplateResponse(request,self.tenplate_name,context)
+        return TemplateResponse(request,self.template_name,context)
 
 
 class ProductDetailView(DetailView):
@@ -103,4 +104,4 @@ class ProductDetailView(DetailView):
         context = self.get_context_data(**kwargs)
         if request.headers.get('HX-Request'):
             return TemplateResponse(request,'main/product_detail.html',context)
-        raise TemplateResponse(request,self.template_name,context)
+        return TemplateResponse(request,self.template_name,context)

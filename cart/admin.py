@@ -6,7 +6,7 @@ class CartItemInline(admin.TabularInline):
     extra = 0
     readonly_fields = ('total_price',)
 
-@admin.register(Cart):
+@admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
     list_display = ('session_key','total_items','subtotal','created_at','updated_at')
     list_filter = ('created_at','updated_at')

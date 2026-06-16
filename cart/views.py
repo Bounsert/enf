@@ -12,14 +12,14 @@ import json
 class CartMixin:
     def get_cart(self,request):
         if hasattr(request,'cart'):
-            return request
+            return request.cart
         if not request.session.session_key:
             request.session.create()
         cart,created = Cart.objects.get_or_create(
             session_key=request.session.session_key
         )
         request.session['cart_id'] = cart.id
-        request.session.modifiend = True
+        request.session.modified = True
         return cart
 
 
@@ -66,7 +66,7 @@ class AddToCartView(CartMixin,View):
                 'error': f'Only {product_size.stock} items avaible'
             },status = 400)
         
-        existing_item = cart.item.filter(
+        existing_item = cart.items.filter(
             product=product,
             product_size=product_size,
         ).first()
@@ -104,7 +104,7 @@ class UpdateCartItemView(CartMixin,View):
         if quantity < 0:
             return JsonResponse({
                 'error':'invalid quantity'
-            },stays = 400)
+            },status = 400)
         if quantity == 0:
             cart_item.delete()
         else:
@@ -172,7 +172,7 @@ class ClearCartView(CartMixin,View):
 
 class CartSummaryView(CartMixin,View):
     def get(self,request):
-        cart = self,self.get_cart(request)
+        cart = self.get_cart(request)
         context = {
             'cart':cart,
             'cart_items':cart.items.select_related(

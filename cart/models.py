@@ -18,7 +18,7 @@ class Cart(models.Model):
     def subtotal(self):
         return sum(item.total_price for item in self.items.all())
     def add_product(self,product,product_size,quantity=1):
-        cart_item,created = CartItem.object.get_or_create(
+        cart_item,created = CartItem.objects.get_or_create(
             cart = self,
             product =product,
             product_size=product_size,
@@ -30,7 +30,7 @@ class Cart(models.Model):
         return cart_item
     def remove_item(self,item_id):
         try:
-            item = self.item.get(id=item_id)
+            item = self.items.get(id=item_id)
             item.delete()
             return True
         except CartItem.DoesNotExist:
@@ -40,14 +40,14 @@ class Cart(models.Model):
             item = self.items.get(id=item_id)
             if quantity > 0:
                 item.quantity = quantity
-                item.sav()
+                item.save()
             else:
                 item.delete()
             return True
         except CartItem.DoesNotExist:
             return False
     def clear(self):
-        self.item.all().delete()
+        self.items.all().delete()
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart,related_name='items',on_delete=models.CASCADE)
     product = models.ForeignKey(Product,on_delete=models.CASCADE)
@@ -63,4 +63,4 @@ class CartItem(models.Model):
     
     @property
     def total_price(self):
-        return Decimal(str(self.product.price) * self.quantity)
+        return Decimal(str(self.product.price)) * self.quantity
